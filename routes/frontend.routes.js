@@ -2,7 +2,10 @@ import { Router } from 'express';
 import axios from 'axios';
 
 const router = Router();
-const API_URL = 'http://localhost:3000/api'; // URL de tu backend
+
+// Se lee la URL del backend desde las variables de entorno.
+// Si no existe (en local), usa http://localhost:3000/api por defecto.
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 
 // 1. Mostrar la vista de Login
 router.get('/', (req, res) => {
