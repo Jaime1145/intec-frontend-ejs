@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>INTEC - Nueva matrícula</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <%- include('partials/nav', { activo: 'matriculas' }) %>
+
+    <div class="container pb-5" style="max-width: 760px;">
+        <div class="card shadow-sm">
+            <div class="card-header fw-bold">Nueva matrícula</div>
+            <div class="card-body">
+                <% if (estudiantes.length === 0) { %>
+                    <div class="alert alert-info mb-0">
+                        Primero debes <a href="/estudiantes">registrar un estudiante</a>.
+                    </div>
+                <% } else { %>
+                <form method="POST" action="/matriculas" class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Estudiante *</label>
+                        <select name="estudiante_id" class="form-select" required>
+                            <option value="">Selecciona...</option>
+                            <% estudiantes.forEach(e => { %>
+                                <option value="<%= e.id %>" <%= String(e.id) === elegido ? 'selected' : '' %>>
+                                    <%= e.apellidos %> <%= e.nombres %> — <%= e.documento %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Programa *</label>
+                        <select name="programa_id" class="form-select" required>
+                            <option value="">Selecciona...</option>
+                            <% programas.forEach(p => { %>
+                                <option value="<%= p.id %>">
+                                    <%= p.nombre %> (<%= p.nivel === 'tecnologo' ? 'Tecnólogo' : 'Técnico' %>)
+                                    — <%= p.valor_total ? dinero(p.valor_total) : 'sin valor definido' %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Periodo *</label>
+                        <input name="periodo" class="form-control" value="<%= periodo %>" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Número de cuotas *</label>
+                        <input name="num_cuotas" type="number" min="1" max="24" value="1" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de matrícula</label>
+                        <input name="fecha_matricula" type="date" value="<%= hoy %>" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Valor total (opcional)</label>
+                        <input name="valor_total" type="number" min="1" step="1000" class="form-control"
+                               placeholder="Déjalo vacío para usar el valor del programa">
+                        <div class="form-text">Úsalo solo si este estudiante tiene un valor distinto (descuento, beca...).</div>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-primary">Crear matrícula</button>
+                        <a href="/matriculas" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

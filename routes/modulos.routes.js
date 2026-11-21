@@ -16,6 +16,16 @@ const avisar = (req, tipo, texto) => { req.session.mensaje = { tipo, texto }; };
 const textoError = (error) =>
     error.response?.data?.error || 'No se pudo conectar con el backend';
 
+// Fecha de hoy en Colombia: AAAA-MM-DD
+const hoyColombia = () =>
+    new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
+
+// Periodo sugerido: AAAA-1 (ene-jun) o AAAA-2 (jul-dic)
+const periodoSugerido = () => {
+    const [anio, mes] = hoyColombia().split('-').map(Number);
+    return `${anio}-${mes <= 6 ? 1 : 2}`;
+};
+
 // Exige sesión y deja listos el mensaje flash y el formateador de dinero
 const requiereSesion = (req, res, next) => {
     if (!req.session.token) return res.redirect('/');
@@ -121,6 +131,80 @@ router.post('/programas/:id', requiereSesion, async (req, res) => {
         res.redirect('/programas');
     } catch (error) {
         falloAccion(req, res, error, '/programas');
+    }
+});
+
+// ---------- Matrículas ----------
+router.get('/matriculas', requiereSesion, async (req, res) => {
+    try {
+        const { data } = await api(req).get('/matriculas');
+        res.render('matriculas', { matriculas: data });
+    } catch (error) {
+        falloVista(req, res, error, 'matriculas', { matriculas: [] });
+    }
+});
+
+// Debe ir antes de /matriculas/:id para que "nueva" no se tome como un id
+router.get('/matriculas/nueva', requiereSesion, async (req, res) => {
+    try {
+        const cliente = api(req);
+        const [est, prog] = await Promise.all([cliente.get('/estudiantes'), cliente.get('/programas')]);
+        res.render('matricula_nueva', {
+            estudiantes: est.data,
+            programas: prog.data.filter((p) => p.activo),
+            hoy: hoyColombia(),
+            periodo: periodoSugerido(),
+            elegido: (req.query.estudiante || '').toString()
+        });
+    } catch (error) {
+        falloVista(req, res, error, 'matricula_nueva', {
+            estudiantes: [], programas: [], hoy: hoyColombia(), periodo: periodoSugerido(), elegido: ''
+        });
+    }
+});
+
+router.post('/matriculas', requiereSesion, async (req, res) => {
+    try {
+        const { data } = await api(req).post('/matriculas', req.body);
+        avisar(req, 'success', 'Matrícula creada con sus cuotas');
+        res.redirect(`/matriculas/${data.id}`);
+    } catch (error) {
+        falloAccion(req, res, error, '/matriculas/nueva');
+    }
+});
+
+router.get('/matriculas/:id', requiereSesion, async (req, res) => {
+    try {
+        const { data } = await api(req).get(`/matriculas/${encodeURIComponent(req.params.id)}`);
+        res.render('matricula_detalle', { m: data, hoy: hoyColombia() });
+    } catch (error) {
+        falloAccion(req, res, error, '/matriculas');
+    }
+});
+
+router.post('/matriculas/:id/estado', requiereSesion, async (req, res) => {
+    const id = encodeURIComponent(req.params.id);
+    try {
+        await api(req).put(`/matriculas/${id}/estado`, { estado: req.body.estado });
+        avisar(req, 'success', 'Estado actualizado');
+    } catch (error) {
+        return falloAccion(req, res, error, `/matriculas/${id}`);
+    }
+    res.redirect(`/matriculas/${id}`);
+});
+
+// Registrar el pago de una cuota; vuelve a la matrícula a la que pertenece
+router.post('/pagos/:id/pagar', requiereSesion, async (req, res) => {
+    const volver = `/matriculas/${encodeURIComponent((req.body.matricula_id || '').toString())}`;
+    try {
+        await api(req).put(`/pagos/${encodeURIComponent(req.params.id)}/pagar`, {
+            metodo: req.body.metodo,
+            fecha_pago: req.body.fecha_pago || undefined
+        });
+        avisar(req, 'success', 'Pago registrado correctamente');
+        res.redirect(volver);
+    } catch (error) {
+        falloAccion(req, res, error, req.body.matricula_id ? volver : '/matriculas');
     }
 });
 

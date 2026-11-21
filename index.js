@@ -4,6 +4,7 @@ import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import router from './routes/frontend.routes.js';
+import modulos from './routes/modulos.routes.js';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -35,6 +36,7 @@ app.use(session({
 
 // Rutas
 app.use('/', router);
+app.use('/', modulos);
 
 // Inicio del servidor
 app.listen(PORT, '0.0.0.0', () => {

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>INTEC - Matrícula <%= m.id %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <%- include('partials/nav', { activo: 'matriculas' }) %>
+
+    <%
+        const colores = { pendiente: 'warning text-dark', activa: 'success', retirada: 'secondary', graduada: 'primary' };
+        const pagado = m.pagos.filter(p => p.estado === 'pagado').reduce((s, p) => s + Number(p.valor), 0);
+        const pendiente = m.pagos.filter(p => p.estado === 'pendiente').reduce((s, p) => s + Number(p.valor), 0);
+    %>
+    <div class="container pb-5">
+        <div class="mb-3"><a href="/matriculas">&larr; Volver a matrículas</a></div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header fw-bold d-flex justify-content-between">
+                        <span>Matrícula #<%= m.id %></span>
+                        <span class="badge bg-<%= colores[m.estado] || 'secondary' %>"><%= m.estado %></span>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Estudiante:</strong> <%= m.apellidos %> <%= m.nombres %></p>
+                        <p class="mb-1"><strong>Documento:</strong> <%= m.documento %></p>
+                        <p class="mb-1"><strong>Contacto:</strong> <%= m.email || '—' %> · <%= m.telefono || '—' %></p>
+                        <p class="mb-1"><strong>Programa:</strong> <%= m.programa %> (<%= m.nivel === 'tecnologo' ? 'Tecnólogo' : 'Técnico' %>)</p>
+                        <p class="mb-1"><strong>Duración:</strong> <%= m.duracion_meses ? m.duracion_meses + ' meses' : '—' %></p>
+                        <p class="mb-1"><strong>Periodo:</strong> <%= m.periodo %></p>
+                        <p class="mb-0"><strong>Fecha de matrícula:</strong> <%= m.fecha_matricula %></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Valor total:</strong> <%= dinero(m.valor_total) %></p>
+                        <p class="mb-1 text-success"><strong>Pagado:</strong> <%= dinero(pagado) %></p>
+                        <p class="mb-0 text-danger"><strong>Pendiente:</strong> <%= dinero(pendiente) %></p>
+                    </div>
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="POST" action="/matriculas/<%= m.id %>/estado" class="d-flex gap-2">
+                            <select name="estado" class="form-select">
+                                <% ['pendiente','activa','retirada','graduada'].forEach(s => { %>
+                                    <option <%= m.estado === s ? 'selected' : '' %>><%= s %></option>
+                                <% }) %>
+                            </select>
+                            <button class="btn btn-outline-primary">Cambiar estado</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>Cuotas</h4>
+        <div class="table-responsive">
+        <table class="table table-bordered bg-white align-middle">
+            <thead class="table-dark">
+                <tr><th>Cuota</th><th class="text-end">Valor</th><th>Vence</th><th>Estado</th><th>Registrar pago</th></tr>
+            </thead>
+            <tbody>
+                <% m.pagos.forEach(p => {
+                    const vencida = p.estado === 'pendiente' && p.fecha_vencimiento < hoy; %>
+                    <tr class="<%= vencida ? 'table-danger' : '' %>">
+                        <td><%= p.numero_cuota %> de <%= m.num_cuotas %></td>
+                        <td class="text-end"><%= dinero(p.valor) %></td>
+                        <td><%= p.fecha_vencimiento %></td>
+                        <td>
+                            <% if (p.estado === 'pagado') { %>
+                                <span class="badge bg-success">Pagada</span>
+                                <small class="text-muted d-block"><%= p.fecha_pago %> · <%= p.metodo %></small>
+                            <% } else if (vencida) { %>
+                                <span class="badge bg-danger">Vencida</span>
+                            <% } else { %>
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (p.estado === 'pendiente') { %>
+                                <form method="POST" action="/pagos/<%= p.id %>/pagar" class="d-flex flex-wrap gap-2">
+                                    <input type="hidden" name="matricula_id" value="<%= m.id %>">
+                                    <select name="metodo" class="form-select form-select-sm" style="width:auto">
+                                        <option>efectivo</option><option>transferencia</option>
+                                        <option>tarjeta</option><option>consignación</option>
+                                    </select>
+                                    <input type="date" name="fecha_pago" value="<%= hoy %>" class="form-control form-control-sm" style="width:auto">
+                                    <button class="btn btn-sm btn-success">Registrar pago</button>
+                                </form>
+                            <% } else { %>
+                                <span class="text-muted">—</span>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</body>
+</html>
