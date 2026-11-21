@@ -1,0 +1,14 @@
+<nav class="navbar navbar-expand navbar-dark bg-primary px-3 mb-3">
+    <span class="navbar-brand fw-bold">INTEC</span>
+    <div class="navbar-nav me-auto">
+        <a class="nav-link <%= activo === 'inicio' ? 'active' : '' %>" href="/dashboard">Inicio</a>
+        <a class="nav-link <%= activo === 'estudiantes' ? 'active' : '' %>" href="/estudiantes">Estudiantes</a>
+        <a class="nav-link <%= activo === 'programas' ? 'active' : '' %>" href="/programas">Programas</a>
+    </div>
+    <a href="/logout" class="btn btn-danger btn-sm">Cerrar Sesión</a>
+</nav>
+<% if (typeof mensaje !== 'undefined' && mensaje) { %>
+    <div class="container">
+        <div class="alert alert-<%= mensaje.tipo %> alert-dismissible"><%= mensaje.texto %></div>
+    </div>
+<% } %>

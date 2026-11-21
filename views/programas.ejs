@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>INTEC - Programas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <%- include('partials/nav', { activo: 'programas' }) %>
+
+    <div class="container pb-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold">Nuevo programa</div>
+            <div class="card-body">
+                <form method="POST" action="/programas" class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label">Nombre *</label>
+                        <input name="nombre" class="form-control" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Nivel *</label>
+                        <select name="nivel" class="form-select">
+                            <option value="tecnico">Técnico</option>
+                            <option value="tecnologo">Tecnólogo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Duración (meses)</label>
+                        <input name="duracion_meses" type="number" min="1" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Valor total</label>
+                        <input name="valor_total" type="number" min="0" step="1000" class="form-control">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-primary w-100">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h3>Programas (<%= programas.length %>)</h3>
+        <p class="text-muted">Edita la duración y el valor directamente en la tabla y pulsa Guardar.</p>
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered bg-white align-middle">
+            <thead class="table-dark">
+                <tr><th>Programa</th><th>Nivel</th><th style="width:150px">Duración (meses)</th><th style="width:200px">Valor total</th><th></th></tr>
+            </thead>
+            <tbody>
+                <% if (programas.length === 0) { %>
+                    <tr><td colspan="5" class="text-center">No hay programas</td></tr>
+                <% } else { %>
+                    <% programas.forEach(p => { %>
+                        <tr>
+                            <td><%= p.nombre %></td>
+                            <td><%= p.nivel === 'tecnologo' ? 'Tecnólogo' : 'Técnico' %></td>
+                            <td><input form="p<%= p.id %>" name="duracion_meses" type="number" min="1"
+                                       class="form-control form-control-sm" value="<%= p.duracion_meses || '' %>"></td>
+                            <td><input form="p<%= p.id %>" name="valor_total" type="number" min="0" step="1000"
+                                       class="form-control form-control-sm" value="<%= p.valor_total ? Math.round(p.valor_total) : '' %>"></td>
+                            <td>
+                                <form id="p<%= p.id %>" method="POST" action="/programas/<%= p.id %>">
+                                    <button class="btn btn-sm btn-outline-primary">Guardar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</body>
+</html>
