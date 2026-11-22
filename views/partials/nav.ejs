@@ -1,14 +1,27 @@
-<nav class="navbar navbar-expand navbar-dark bg-primary px-3 mb-3">
-    <span class="navbar-brand fw-bold">INTEC</span>
-    <div class="navbar-nav me-auto">
-        <a class="nav-link <%= activo === 'inicio' ? 'active' : '' %>" href="/dashboard">Inicio</a>
-        <a class="nav-link <%= activo === 'estudiantes' ? 'active' : '' %>" href="/estudiantes">Estudiantes</a>
-        <a class="nav-link <%= activo === 'matriculas' ? 'active' : '' %>" href="/matriculas">Matrículas</a>
-        <a class="nav-link <%= activo === 'alertas' ? 'active' : '' %>" href="/alertas">Alertas</a>
-        <a class="nav-link <%= activo === 'programas' ? 'active' : '' %>" href="/programas">Programas</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Public+Sans:wght@400..700&display=swap" rel="stylesheet">
+<link href="/intec.css" rel="stylesheet">
+<header class="intec-top">
+    <div class="intec-fila">
+        <a class="intec-marca" href="/dashboard" aria-label="INTEC, ir al inicio">
+            <svg width="38" height="34" viewBox="0 0 76 68" aria-hidden="true">
+                <polygon points="38,2 72,18 38,34 4,18" fill="#f2b84b"/>
+                <path d="M18 30 L18 44 Q38 54 58 44 L58 30 L38 40 Z" fill="#f2b84b" opacity=".8"/>
+                <path d="M10 52 L38 44 L66 52 L66 64 L38 56 L10 64 Z" fill="#ffffff"/>
+            </svg>
+            <span>INTEC<small>Gestión académica</small></span>
+        </a>
+        <nav class="intec-menu" aria-label="Principal">
+            <a class="<%= activo === 'inicio' ? 'activo' : '' %>" href="/dashboard">Inicio</a>
+            <a class="<%= activo === 'estudiantes' ? 'activo' : '' %>" href="/estudiantes">Estudiantes</a>
+            <a class="<%= activo === 'matriculas' ? 'activo' : '' %>" href="/matriculas">Matrículas</a>
+            <a class="<%= activo === 'alertas' ? 'activo' : '' %>" href="/alertas">Alertas</a>
+            <a class="<%= activo === 'programas' ? 'activo' : '' %>" href="/programas">Programas</a>
+        </nav>
+        <a href="/logout" class="intec-salir">Cerrar sesión</a>
     </div>
-    <a href="/logout" class="btn btn-danger btn-sm">Cerrar Sesión</a>
-</nav>
+</header>
 <% if (typeof mensaje !== 'undefined' && mensaje) { %>
     <div class="container">
         <div class="alert alert-<%= mensaje.tipo %>"><%= mensaje.texto %></div>

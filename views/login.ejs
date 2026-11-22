@@ -2,36 +2,57 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>INTEC - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>INTEC - Iniciar sesión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Public+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <link href="/intec.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4>INTEC Admin</h4>
-                    </div>
-                    <div class="card-body">
-                        <% if (error) { %>
-                            <div class="alert alert-danger"><%= error %></div>
-                        <% } %>
-                        <form action="/login" method="POST">
-                            <div class="mb-3">
-                                <label>Usuario</label>
-                                <input type="text" name="usuario" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label>Contraseña</label>
-                                <input type="password" name="contraseña" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-                        </form>
-                    </div>
-                </div>
+<body>
+    <main class="ingreso">
+        <section class="ingreso-panel">
+            <svg class="ingreso-sello" viewBox="0 0 320 320" aria-hidden="true">
+                <defs><path id="aro" d="M160,160 m-132,0 a132,132 0 1,1 264,0 a132,132 0 1,1 -264,0"/></defs>
+                <circle cx="160" cy="160" r="156" fill="none" stroke="currentColor" stroke-width="3"/>
+                <circle cx="160" cy="160" r="104" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text font-family="Public Sans, sans-serif" font-size="17" font-weight="600" fill="currentColor">
+                    <textPath href="#aro" textLength="820" lengthAdjust="spacing">INSTITUTO TÉCNICO DE CAPACITACIÓN Y FORMACIÓN NACIONAL · GIRARDOT · CUNDINAMARCA ·</textPath>
+                </text>
+                <polygon points="160,104 214,128 160,152 106,128" fill="currentColor"/>
+                <path d="M126 146 L126 168 Q160 184 194 168 L194 146 L160 162 Z" fill="currentColor" opacity=".8"/>
+                <path d="M118 182 L160 170 L202 182 L202 204 L160 192 L118 204 Z" fill="currentColor"/>
+            </svg>
+            <div class="ingreso-marca">
+                <svg width="52" height="46" viewBox="0 0 76 68" aria-hidden="true">
+                    <polygon points="38,2 72,18 38,34 4,18" fill="#f2b84b"/>
+                    <path d="M18 30 L18 44 Q38 54 58 44 L58 30 L38 40 Z" fill="#f2b84b" opacity=".8"/>
+                    <path d="M10 52 L38 44 L66 52 L66 64 L38 56 L10 64 Z" fill="#ffffff"/>
+                </svg>
+                <div><b>INTEC</b><span>Instituto Técnico de Capacitación y Formación Nacional</span></div>
             </div>
-        </div>
-    </div>
+            <h2 class="ingreso-lema">Matrículas, pagos y documentos que se pueden verificar.</h2>
+            <div class="ingreso-pie">Girardot, Cundinamarca</div>
+        </section>
+        <section class="ingreso-form">
+            <form action="/login" method="POST">
+                <h1>Iniciar sesión</h1>
+                <p class="sub">Ingrese con su usuario del sistema.</p>
+                <% if (error) { %>
+                    <div class="alert alert-danger" role="alert"><%= error %></div>
+                <% } %>
+                <div class="mb-3">
+                    <label class="form-label" for="usuario">Usuario</label>
+                    <input id="usuario" type="text" name="usuario" class="form-control form-control-lg" autocomplete="username" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label" for="clave">Contraseña</label>
+                    <input id="clave" type="password" name="contraseña" class="form-control form-control-lg" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100">Ingresar</button>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
