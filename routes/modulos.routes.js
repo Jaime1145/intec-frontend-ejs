@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
+import { enlaces } from '../utils/alertas.js';
 
 const router = Router();
 const API_URL = process.env.API_URL || 'http://localhost:3000/api';
@@ -205,6 +206,36 @@ router.post('/pagos/:id/pagar', requiereSesion, async (req, res) => {
         res.redirect(volver);
     } catch (error) {
         falloAccion(req, res, error, req.body.matricula_id ? volver : '/matriculas');
+    }
+});
+
+// ---------- Alertas ----------
+router.get('/alertas', requiereSesion, async (req, res) => {
+    const filtro = ['alto', 'medio', 'bajo', 'preventivo'].includes(req.query.nivel) ? req.query.nivel : '';
+    try {
+        const { data } = await api(req).get('/alertas');
+        const alertas = data.alertas
+            .map((a) => ({ ...a, ...enlaces(a) }))
+            .filter((a) => !filtro || a.nivel === filtro);
+        res.render('alertas', { fecha: data.fecha, resumen: data.resumen, alertas, filtro });
+    } catch (error) {
+        falloVista(req, res, error, 'alertas', {
+            fecha: '', filtro: '', alertas: [],
+            resumen: { alto: 0, medio: 0, bajo: 0, preventivo: 0, total: 0, valor_vencido: 0 }
+        });
+    }
+});
+
+// Registra que el estudiante ingresó hoy a clases
+router.post('/matriculas/:id/acceso', requiereSesion, async (req, res) => {
+    const id = encodeURIComponent(req.params.id);
+    const volver = req.body.volver === 'alertas' ? '/alertas' : `/matriculas/${id}`;
+    try {
+        await api(req).put(`/matriculas/${id}/acceso`, {});
+        avisar(req, 'success', 'Ingreso registrado correctamente');
+        res.redirect(volver);
+    } catch (error) {
+        falloAccion(req, res, error, volver);
     }
 });
 
