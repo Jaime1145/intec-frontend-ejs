@@ -208,4 +208,37 @@ router.post('/pagos/:id/pagar', requiereSesion, async (req, res) => {
     }
 });
 
+// ---------- Documentos PDF ----------
+// Pide el PDF al backend y lo muestra en el navegador. Si el backend rechaza la solicitud
+// (por ejemplo, matrícula sin pagos), vuelve a la matrícula con el aviso.
+const enviarPdf = async (req, res, ruta, volver) => {
+    try {
+        const respuesta = await api(req).get(ruta, { responseType: 'arraybuffer' });
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': respuesta.headers['content-disposition'] || 'inline; filename="documento.pdf"'
+        });
+        res.send(Buffer.from(respuesta.data));
+    } catch (error) {
+        // Con arraybuffer el cuerpo del error llega como bytes: se convierte a JSON para leer el mensaje
+        if (error.response?.data) {
+            try {
+                error.response.data = JSON.parse(Buffer.from(error.response.data).toString('utf8'));
+            } catch { /* si no es JSON se deja tal cual */ }
+        }
+        falloAccion(req, res, error, volver);
+    }
+};
+
+router.get('/matriculas/:id/constancia', requiereSesion, (req, res) => {
+    const id = encodeURIComponent(req.params.id);
+    enviarPdf(req, res, `/matriculas/${id}/constancia`, `/matriculas/${id}`);
+});
+
+router.get('/pagos/:id/recibo', requiereSesion, (req, res) => {
+    const m = (req.query.m || '').toString();
+    enviarPdf(req, res, `/pagos/${encodeURIComponent(req.params.id)}/recibo`,
+        m ? `/matriculas/${encodeURIComponent(m)}` : '/matriculas');
+});
+
 export default router;

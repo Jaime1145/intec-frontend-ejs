@@ -43,6 +43,18 @@
                         <p class="mb-0 text-danger"><strong>Pendiente:</strong> <%= dinero(pendiente) %></p>
                     </div>
                 </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <% if (['activa', 'graduada'].includes(m.estado)) { %>
+                            <a href="/matriculas/<%= m.id %>/constancia" target="_blank" class="btn btn-dark w-100">
+                                Constancia de matrícula (PDF)
+                            </a>
+                        <% } else { %>
+                            <button class="btn btn-outline-secondary w-100" disabled>Constancia de matrícula (PDF)</button>
+                            <div class="form-text">Disponible cuando la matrícula esté activa, es decir, con al menos un pago.</div>
+                        <% } %>
+                    </div>
+                </div>
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <form method="POST" action="/matriculas/<%= m.id %>/estado" class="d-flex gap-2">
@@ -93,7 +105,8 @@
                                     <button class="btn btn-sm btn-success">Registrar pago</button>
                                 </form>
                             <% } else { %>
-                                <span class="text-muted">—</span>
+                                <a href="/pagos/<%= p.id %>/recibo?m=<%= m.id %>" target="_blank"
+                                   class="btn btn-sm btn-outline-dark">Recibo (PDF)</a>
                             <% } %>
                         </td>
                     </tr>
