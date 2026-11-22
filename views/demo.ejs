@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>INTEC - Datos de demostración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <%- include('partials/nav', { activo: 'demo' }) %>
+    <div class="container pb-5" style="max-width: 640px">
+        <h3>Datos de demostración</h3>
+        <p class="text-muted">
+            Carga 12 estudiantes de ejemplo con matrículas, cuotas y pagos en distintos estados
+            (mora, sin ingreso, pagos próximos, graduada, retirada) para ver las alertas y los PDF.
+            Se pueden borrar después sin tocar los datos reales.
+        </p>
+        <div class="card shadow-sm mb-3"><div class="card-body">
+            <form method="POST" action="/demo/sembrar">
+                <label class="form-label">Celular para probar WhatsApp (opcional, 10 dígitos)</label>
+                <input name="telefono" class="form-control mb-1" placeholder="3001234567" inputmode="numeric">
+                <div class="form-text mb-3">Se asigna a todos los estudiantes de ejemplo. Use el suyo para no escribirle a nadie más.</div>
+                <button class="btn btn-primary">Cargar datos de demostración</button>
+            </form>
+        </div></div>
+        <div class="card shadow-sm"><div class="card-body">
+            <form method="POST" action="/demo/limpiar" onsubmit="return confirm('¿Borrar los estudiantes de demostración y sus matrículas y pagos?');">
+                <button class="btn btn-outline-danger">Borrar datos de demostración</button>
+            </form>
+        </div></div>
+    </div>
+</body>
+</html>

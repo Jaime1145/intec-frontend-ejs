@@ -239,6 +239,30 @@ router.post('/matriculas/:id/acceso', requiereSesion, async (req, res) => {
     }
 });
 
+// ---------- Datos de demostración ----------
+// Página sin enlace en el menú: se abre escribiendo /demo
+router.get('/demo', requiereSesion, (req, res) => res.render('demo'));
+
+router.post('/demo/sembrar', requiereSesion, async (req, res) => {
+    try {
+        const { data } = await api(req).post('/demo/sembrar', { telefono: req.body.telefono });
+        avisar(req, 'success', `Se cargaron ${data.estudiantes} estudiantes de demostración`);
+        res.redirect('/alertas');
+    } catch (error) {
+        falloAccion(req, res, error, '/demo');
+    }
+});
+
+router.post('/demo/limpiar', requiereSesion, async (req, res) => {
+    try {
+        const { data } = await api(req).post('/demo/limpiar');
+        avisar(req, 'success', `Se borraron ${data.eliminados} estudiantes de demostración`);
+    } catch (error) {
+        return falloAccion(req, res, error, '/demo');
+    }
+    res.redirect('/demo');
+});
+
 // ---------- Documentos PDF ----------
 // Pide el PDF al backend y lo muestra en el navegador. Si el backend rechaza la solicitud
 // (por ejemplo, matrícula sin pagos), vuelve a la matrícula con el aviso.
