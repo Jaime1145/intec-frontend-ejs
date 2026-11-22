@@ -61,6 +61,14 @@
                             <button class="btn btn-outline-secondary w-100" disabled>Constancia de matrícula (PDF)</button>
                             <div class="form-text">Disponible cuando la matrícula esté activa, es decir, con al menos un pago.</div>
                         <% } %>
+                        <% if (m.estado === 'graduada') { %>
+                            <a href="/matriculas/<%= m.id %>/certificado" target="_blank" class="btn btn-primary w-100 mt-2">
+                                Certificado de estudios (PDF)
+                            </a>
+                        <% } else { %>
+                            <button class="btn btn-outline-secondary w-100 mt-2" disabled>Certificado de estudios (PDF)</button>
+                            <div class="form-text">Disponible cuando la matrícula esté en estado graduada.</div>
+                        <% } %>
                     </div>
                 </div>
                 <div class="card shadow-sm">

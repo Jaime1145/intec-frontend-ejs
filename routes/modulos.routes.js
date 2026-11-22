@@ -266,6 +266,11 @@ router.get('/matriculas/:id/constancia', requiereSesion, (req, res) => {
     enviarPdf(req, res, `/matriculas/${id}/constancia`, `/matriculas/${id}`);
 });
 
+router.get('/matriculas/:id/certificado', requiereSesion, (req, res) => {
+    const id = encodeURIComponent(req.params.id);
+    enviarPdf(req, res, `/matriculas/${id}/certificado`, `/matriculas/${id}`);
+});
+
 router.get('/pagos/:id/recibo', requiereSesion, (req, res) => {
     const m = (req.query.m || '').toString();
     enviarPdf(req, res, `/pagos/${encodeURIComponent(req.params.id)}/recibo`,
